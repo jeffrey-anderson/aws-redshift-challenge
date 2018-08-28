@@ -2,7 +2,8 @@
 
 ## Prerequisites
 
-[Download the latest version of DBeaver](https://dbeaver.io/download/) or get a copy from shopit.nwie.net. 
+[Download the latest version of DBeaver](https://dbeaver.io/download/) or get a copy from shopit.nwie.net. **Note:**
+If you don't have admin privileges on your laptop, choose the option to install just for you (not all users).
 
 ## References
 
@@ -174,15 +175,15 @@ picture. Record the following [statistics](TableStats.sql) before making any cha
 
 table            |load time (sec) |row count    |size (mb) |
 -----------------|---------------:|------------:|---------:|
-customer         |             32 |   3,750,000 |    2,464 |
-lineitem         |          1,506 | 149,996,355 |  165,097 |
-nation           |              5 |          25 |       56 |
-orders           |            268 |  37,500,000 |   31,181 |
-part             |             60 |   5,000,000 |    7,504 |
-partsupp         |             72 |  20,000,000 |    5,632 |
-region           |              5 |           5 |       30 |
-supplier         |              7 |     250,000 |      304 |
-**TOTALS**     | **1,955** | **216,496,385** | **212,268** | 
+customer         |             32 |             |          |
+lineitem         |          1,506 |             |          |
+nation           |              5 |             |          |
+orders           |            268 |             |          |
+part             |             60 |             |          |
+partsupp         |             72 |             |          |
+region           |              5 |             |          |
+supplier         |              7 |             |          |
+**TOTALS**       |      **1,955** |             |          | 
 
 ### Best Practices Analysis
 
@@ -198,8 +199,8 @@ did Johnny follow?
 
 ### Sample Queries
 
-Understanding the data model and how the data is queried is important to proper table design. Marketing has provided 
-a few typical queries.
+In order to help you optimse the table design, Marketing has provided a few queries which are typically included in
+their analysis.
 
 #### Query 1
 
@@ -211,8 +212,7 @@ listed in ascending order of RETURNFLAG and LINESTATUS. A count of the number of
 group is included.
 
 ```sql
-select
-       l_returnflag,
+select l_returnflag,
        l_linestatus,
        sum(l_quantity) as sum_qty,
        sum(l_extendedprice) as sum_base_price,
@@ -293,10 +293,10 @@ making sure to disable caching
 
 | Query   | Execution time (sec) |
 |---------|---------------------:|
-| Query 1 | 42
-| Query 2 |  4
-| Query 3 | 22
-| **TOTAL** | 68
+| Query 1 | 
+| Query 2 | 
+| Query 3 | 
+| **TOTAL** | 
 
 1. Record the execution plan for each query
 
@@ -317,31 +317,34 @@ balance storage and load times with good query performance.
     ```sql
 
     ```
-1. Drop the existing tables
+1. [Drop](DropTables.sql) the existing tables
 
-1. Run the updated copy commands and update the table statistics:
+1. Run your new create table scripts
+
+1. Refresh the table data using your new copy commands
+ 
+1. Update the table statistics:
     
     table            |load time (sec) |row count    |size (mb) |
     -----------------|---------------:|------------:|---------:|
-    customer         |             39 |   3,750,000 |      439 |
-    lineitem         |            247 | 149,996,355 |    6,750 |
-    nation           |             17 |          25 |       56 |
-    orders           |             76 |  37,500,000 |    1,768 |
-    part             |             35 |   5,000,000 |      352 |
-    partsupp         |             42 |  20,000,000 |    1,384 |
-    region           |             20 |           5 |       48 |
-    supplier         |             22 |     250,000 |      160 |
-    **TOTALS**       |        **498** |             | **10,957** |
+    customer         |                |             |          |
+    lineitem         |                |             |          |
+    nation           |                |             |          |
+    orders           |                |             |          |
+    part             |                |             |          |
+    partsupp         |                |             |          |
+    region           |                |             |          |
+    supplier         |                |             |          |
+    **TOTALS**       |                |             |          |
 
 1. Record the execution time of each query
 
-| Query   | Original time (sec) | New Time
-|---------|--------------------:|---------:|
-| Query 1 | 42                  | 4
-| Query 2 |  4                  | 1
-| Query 3 | 22                  | 3
-| **TOTAL** | **68**            | **8**
-
+    | Query   | Original time (sec) | New Time
+    |---------|--------------------:|---------:|
+    | Query 1 |                     | 
+    | Query 2 |                     | 
+    | Query 3 |                     | 
+    | **TOTAL** |                   | 
 
 1. Record the execution plan for each query
 
