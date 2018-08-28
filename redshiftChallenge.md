@@ -2,166 +2,175 @@
 
 ## Prerequisites
 
-If you have admin rights on your computer, download the latest version of DBeaver
+[Download the latest version of DBeaver](https://dbeaver.io/download/) or get a copy from shopit.nwie.net. 
 
 ## References
 
 * [Amazon Redshift Best Practices](https://docs.aws.amazon.com/redshift/latest/dg/best-practices.html)
+* [Amazon Redshift Engineering’s Advanced Table Design Playbook](https://aws.amazon.com/blogs/big-data/amazon-redshift-engineerings-advanced-table-design-playbook-preamble-prerequisites-and-prioritization/)
 
 ## The Challenge
-Over the summer, your department intern, Johnny, created and loaded some tables in Redshift for the Marketing department. 
-Initially, the custer was performing well but as more data was added, performance started to degrade. Now, the AVP of 
+Over the summer, your department intern, Johnny, setup a Redshift cluster for the Marketing department. 
+Initially, everything was performing well but as more data was added, performance started to degrade. Now, the AVP of 
 Marketing is concerned because query performance is slow, the table load times are longer than anticipated, and storage 
 usage is much higher than projected for the amount of data being stored.  
 
-There is a bit of wiggle room in the budget to add more resources to the cluster but, before doing so, your manager has
+There is a bit of wiggle room in the budget to add more resources but, before doing so, your manager has
 asked you to review Johnny's work and make sure it follows the 
 [AWS Redshift best practices](https://docs.aws.amazon.com/redshift/latest/dg/best-practices.html). 
 Having just earned your 
 [AWS Big Data Speciality Certification](https://aws.amazon.com/certification/certified-big-data-specialty/) 
 you are eager to impress her.
 
+The marketing manager created a snapshot called ``inital-state-with-data`` for you to use in your evaluation. The admin
+user is ``awsuser`` and the password is ``H0ppyIPA``. They
+use a cluster of four (4) dc2.large nodes in production. The snapshot and most recent source data is in the Ohio 
+region. The first thing you do is create a new cluster by restoring the snapshot.  
+
 ## The Intern's Design
 
-1. The table create statements Johnny used are shown below:
-    ```sql
-    CREATE TABLE region
-    (
-    	R_REGIONKEY BIGINT ENCODE RAW,
-    	R_NAME CHAR(256) ENCODE RAW,
-    	R_COMMENT VARCHAR(256) ENCODE RAW
-    );
-    
-    CREATE TABLE nation
-    (
-    	N_NATIONKEY BIGINT ENCODE RAW,
-    	N_NAME CHAR(256) ENCODE RAW,
-    	N_REGIONKEY BIGINT ENCODE RAW,
-    	N_COMMENT VARCHAR(256) ENCODE RAW
-    );
-    
-    CREATE TABLE part
-    (
-    	P_PARTKEY BIGINT ENCODE RAW,
-    	P_NAME CHAR(256) ENCODE RAW,
-    	P_MFGR CHAR(256) ENCODE RAW,
-    	P_BRAND CHAR(256) ENCODE RAW,
-    	P_TYPE CHAR(256) ENCODE RAW,
-    	P_SIZE INTEGER ENCODE RAW,
-    	P_CONTAINER CHAR(256) ENCODE RAW,
-    	P_RETAILPRICE NUMERIC(12, 2) ENCODE RAW,
-    	P_COMMENT CHAR(256) ENCODE RAW
-    );
-    
-    CREATE TABLE supplier
-    (
-    	S_SUPPKEY BIGINT ENCODE RAW,
-    	S_NAME CHAR(256) ENCODE RAW,
-    	S_ADDRESS CHAR(256) ENCODE RAW,
-    	S_NATIONKEY BIGINT ENCODE RAW,
-    	S_PHONE CHAR(256) ENCODE RAW,
-    	S_ACCTBAL NUMERIC(12, 2) ENCODE RAW,
-    	S_COMMENT CHAR(256) ENCODE RAW
-    );
-    
-    CREATE TABLE customer
-    (
-    	C_CUSTKEY BIGINT ENCODE RAW,
-    	C_NAME VARCHAR(256) ENCODE RAW,
-    	C_ADDRESS VARCHAR(256) ENCODE RAW,
-    	C_NATIONKEY BIGINT ENCODE RAW,
-    	C_PHONE CHAR(256) ENCODE RAW,
-    	C_ACCTBAL NUMERIC(12, 2) ENCODE RAW,
-    	C_MKTSEGMENT CHAR(256) ENCODE RAW,
-    	C_COMMENT VARCHAR(256) ENCODE RAW
-    );
-    
-    CREATE TABLE partsupp
-    (
-    	PS_PARTKEY BIGINT ENCODE RAW,
-    	PS_SUPPKEY BIGINT ENCODE RAW,
-    	PS_AVAILQTY INTEGER ENCODE RAW,
-    	PS_SUPPLYCOST NUMERIC(12, 2) ENCODE RAW,
-    	PS_COMMENT CHAR(256) ENCODE RAW
-    );
-    
-    CREATE TABLE orders
-    (
-    	o_orderkey BIGINT DISTKEY ENCODE RAW,
-    	o_custkey BIGINT ENCODE RAW,
-    	o_orderstatus CHAR(256) ENCODE RAW,
-    	o_totalprice NUMERIC(12, 2) ENCODE RAW,
-    	o_orderdate CHAR(10) ENCODE RAW,
-    	o_orderpriority CHAR(256) ENCODE RAW,
-    	o_clerk CHAR(256) ENCODE RAW,
-    	o_shippriority INTEGER ENCODE RAW,
-    	o_comment VARCHAR(256) ENCODE RAW
-    );
-    
-    CREATE TABLE lineitem
-    (
-    	l_orderkey BIGINT DISTKEY ENCODE RAW,
-    	l_partkey BIGINT ENCODE RAW,
-    	l_suppkey INTEGER ENCODE RAW,
-    	l_linenumber INTEGER ENCODE RAW,
-    	l_quantity NUMERIC(12, 2) ENCODE RAW,
-    	l_extendedprice NUMERIC(12, 2) ENCODE RAW,
-    	l_discount NUMERIC(12, 2) ENCODE RAW,
-    	l_tax NUMERIC(12, 2) ENCODE RAW,
-    	l_returnflag CHAR(256) ENCODE RAW,
-    	l_linestatus CHAR(256) ENCODE RAW,
-    	l_shipdate CHAR(10) ENCODE RAW,
-    	l_commitdate CHAR(10) ENCODE RAW,
-    	l_receiptdate CHAR(10) ENCODE RAW,
-    	l_shipinstruct CHAR(256) ENCODE RAW,
-    	l_shipmode CHAR(256) ENCODE RAW,
-      l_comment VARCHAR(256) ENCODE RAW
-    );
-    ```
+While waiting for the cluster to become available, you take a few minutes to review Johnny's design. The table create 
+statements he used are shown below:
+```sql
+CREATE TABLE region
+(
+    R_REGIONKEY BIGINT ENCODE RAW,
+    R_NAME CHAR(256) ENCODE RAW,
+    R_COMMENT VARCHAR(256) ENCODE RAW
+);
 
-1. Johnny created the following script to load the data:
-    ```sql
-    copy region FROM 's3://tpc-h-load-data/raw/region.tbl'
-    credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
-    compupdate off delimiter '|' ;
-    
-    copy nation FROM 's3://tpc-h-load-data/raw/nation.tbl'
-    credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
-    compupdate off delimiter '|' ;
-    
-    copy part FROM 's3://tpc-h-load-data/raw/part.tbl'
-    credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
-    compupdate off delimiter '|' ;
-    
-    copy supplier FROM 's3://tpc-h-load-data/raw/supplier.tbl'
-    credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
-    compupdate off delimiter '|' ;
-    
-    copy partsupp FROM 's3://tpc-h-load-data/raw/partsupp.tbl'
-    credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
-    compupdate off delimiter '|' ;
-    
-    copy customer FROM 's3://tpc-h-load-data/raw/customer.tbl'
-    credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
-    compupdate off delimiter '|' ;
-    
-    copy orders FROM 's3://tpc-h-load-data/raw/orders.tbl'
-    credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
-    compupdate off delimiter '|' ;
-    
-    copy lineitem FROM 's3://tpc-h-load-data/raw/lineitem.tbl'
-    credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
-    compupdate off delimiter '|' ;
-    ```
+CREATE TABLE nation
+(
+    N_NATIONKEY BIGINT ENCODE RAW,
+    N_NAME CHAR(256) ENCODE RAW,
+    N_REGIONKEY BIGINT ENCODE RAW,
+    N_COMMENT VARCHAR(256) ENCODE RAW
+);
+
+CREATE TABLE part
+(
+    P_PARTKEY BIGINT ENCODE RAW,
+    P_NAME CHAR(256) ENCODE RAW,
+    P_MFGR CHAR(256) ENCODE RAW,
+    P_BRAND CHAR(256) ENCODE RAW,
+    P_TYPE CHAR(256) ENCODE RAW,
+    P_SIZE INTEGER ENCODE RAW,
+    P_CONTAINER CHAR(256) ENCODE RAW,
+    P_RETAILPRICE NUMERIC(12, 2) ENCODE RAW,
+    P_COMMENT CHAR(256) ENCODE RAW
+);
+
+CREATE TABLE supplier
+(
+    S_SUPPKEY BIGINT ENCODE RAW,
+    S_NAME CHAR(256) ENCODE RAW,
+    S_ADDRESS CHAR(256) ENCODE RAW,
+    S_NATIONKEY BIGINT ENCODE RAW,
+    S_PHONE CHAR(256) ENCODE RAW,
+    S_ACCTBAL NUMERIC(12, 2) ENCODE RAW,
+    S_COMMENT CHAR(256) ENCODE RAW
+);
+
+CREATE TABLE customer
+(
+    C_CUSTKEY BIGINT ENCODE RAW,
+    C_NAME VARCHAR(256) ENCODE RAW,
+    C_ADDRESS VARCHAR(256) ENCODE RAW,
+    C_NATIONKEY BIGINT ENCODE RAW,
+    C_PHONE CHAR(256) ENCODE RAW,
+    C_ACCTBAL NUMERIC(12, 2) ENCODE RAW,
+    C_MKTSEGMENT CHAR(256) ENCODE RAW,
+    C_COMMENT VARCHAR(256) ENCODE RAW
+);
+
+CREATE TABLE partsupp
+(
+    PS_PARTKEY BIGINT ENCODE RAW,
+    PS_SUPPKEY BIGINT ENCODE RAW,
+    PS_AVAILQTY INTEGER ENCODE RAW,
+    PS_SUPPLYCOST NUMERIC(12, 2) ENCODE RAW,
+    PS_COMMENT CHAR(256) ENCODE RAW
+);
+
+CREATE TABLE orders
+(
+    o_orderkey BIGINT DISTKEY ENCODE RAW,
+    o_custkey BIGINT ENCODE RAW,
+    o_orderstatus CHAR(256) ENCODE RAW,
+    o_totalprice NUMERIC(12, 2) ENCODE RAW,
+    o_orderdate CHAR(10) ENCODE RAW,
+    o_orderpriority CHAR(256) ENCODE RAW,
+    o_clerk CHAR(256) ENCODE RAW,
+    o_shippriority INTEGER ENCODE RAW,
+    o_comment VARCHAR(256) ENCODE RAW
+);
+
+CREATE TABLE lineitem
+(
+    l_orderkey BIGINT DISTKEY ENCODE RAW,
+    l_partkey BIGINT ENCODE RAW,
+    l_suppkey INTEGER ENCODE RAW,
+    l_linenumber INTEGER ENCODE RAW,
+    l_quantity NUMERIC(12, 2) ENCODE RAW,
+    l_extendedprice NUMERIC(12, 2) ENCODE RAW,
+    l_discount NUMERIC(12, 2) ENCODE RAW,
+    l_tax NUMERIC(12, 2) ENCODE RAW,
+    l_returnflag CHAR(256) ENCODE RAW,
+    l_linestatus CHAR(256) ENCODE RAW,
+    l_shipdate CHAR(10) ENCODE RAW,
+    l_commitdate CHAR(10) ENCODE RAW,
+    l_receiptdate CHAR(10) ENCODE RAW,
+    l_shipinstruct CHAR(256) ENCODE RAW,
+    l_shipmode CHAR(256) ENCODE RAW,
+    l_comment VARCHAR(256) ENCODE RAW
+);
+```
+
+Next, you look over the script Johnny created to load the data:
+```sql
+copy region FROM 's3://tpc-h-load-data/raw/region.tbl'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
+compupdate off delimiter '|' ;
+
+copy nation FROM 's3://tpc-h-load-data/raw/nation.tbl'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
+compupdate off delimiter '|' ;
+
+copy part FROM 's3://tpc-h-load-data/raw/part.tbl'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
+compupdate off delimiter '|' ;
+
+copy supplier FROM 's3://tpc-h-load-data/raw/supplier.tbl'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
+compupdate off delimiter '|' ;
+
+copy partsupp FROM 's3://tpc-h-load-data/raw/partsupp.tbl'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
+compupdate off delimiter '|' ;
+
+copy customer FROM 's3://tpc-h-load-data/raw/customer.tbl'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
+compupdate off delimiter '|' ;
+
+copy orders FROM 's3://tpc-h-load-data/raw/orders.tbl'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
+compupdate off delimiter '|' ;
+
+copy lineitem FROM 's3://tpc-h-load-data/raw/lineitem.tbl'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
+compupdate off delimiter '|' ;
+```
     
 ## Initial Analysis
+
+The data architect has provided this entity relationship diagram:
+
+![Marketing Data Warehouse ERD](images/Marketing-ERD.png "Marketing Data Warehouse ERD")
 
 ### Benchmarks
 
 Before making any changes, you want to understand the current state so you can report an accurate before and after 
-picture.
-
-Record the following statistics before making any changes:
+picture. Record the following [statistics](TableStats.sql) before making any changes:
 
 table            |load time (sec) |row count    |size (mb) |
 -----------------|---------------:|------------:|---------:|
@@ -192,7 +201,102 @@ did Johnny follow?
 Understanding the data model and how the data is queried is important to proper table design. Marketing has provided 
 a few typical queries.
 
-1. Record the execution time of each query
+#### Query 1
+
+The Pricing Summary Report Query provides a summary pricing report for all lineitems shipped as of a given date. 
+The date is within 60 - 120 days of the greatest ship date contained in the database. The query lists 
+totals for extended price, discounted extended price, discounted extended price plus tax, average quantity, 
+average extended price, and average discount. These aggregates are grouped by RETURNFLAG and LINESTATUS, and 
+listed in ascending order of RETURNFLAG and LINESTATUS. A count of the number of lineitems in each 
+group is included.
+
+```sql
+select
+       l_returnflag,
+       l_linestatus,
+       sum(l_quantity) as sum_qty,
+       sum(l_extendedprice) as sum_base_price,
+       sum(l_extendedprice*(1-l_discount)) as sum_disc_price,
+       sum(l_extendedprice*(1-l_discount)*(1+l_tax)) as sum_charge,
+       avg(l_quantity) as avg_qty,
+       avg(l_extendedprice) as avg_price,
+       avg(l_discount) as avg_disc,
+       count(*) as count_order
+from lineitem
+where l_shipdate <= date '1998-12-01' - interval '90' day
+group by l_returnflag, l_linestatus
+order by l_returnflag, l_linestatus;
+```
+
+#### Query 2
+
+The Volume Shipping Query finds, for two given nations, the gross discounted revenues derived from lineitems in 
+which parts were shipped from a supplier in either nation to a customer in the other nation during 1995 and 1996. 
+The query lists the supplier nation, the customer nation, the year, and the revenue from shipments that took place
+in that year. The query orders the answer by Supplier nation, Customer nation, and year (all ascending).
+
+The business analyst gave them a slightly different query but it would not run due to date related errors. The marketing
+manager would like you to git rid of the work around.
+
+```sql
+select supp_nation, cust_nation, l_year, sum(volume) as revenue
+from (
+      select
+             n1.n_name as supp_nation,
+             n2.n_name as cust_nation,
+             -- WORKS:
+             SUBSTRING(l_shipdate,1,4) as l_year,
+             -- SHOULD BE:
+             -- extract(year from l_shipdate) as l_year,
+             l_extendedprice * (1-l_discount) as volume
+      from supplier, lineitem, orders, customer, nation n1, nation n2
+      where s_suppkey = l_suppkey
+        and o_orderkey = l_orderkey
+        and c_custkey = o_custkey
+        and s_nationkey = n1.n_nationkey
+        and c_nationkey = n2.n_nationkey
+        and (
+              (n1.n_name = 'CANADA' and n2.n_name = 'UNITED STATES')
+                or (n1.n_name = 'UNITED STATES' and n2.n_name = 'CANADA')
+            )
+        -- WORKS:
+        and l_shipdate between '1995-01-01' and '1996-12-31') as shipping
+        -- SHOULD BE:
+        -- and l_shipdate between date '1995-01-01' and date '1996-12-31') as shipping 
+group by supp_nation, cust_nation, l_year
+order by supp_nation, cust_nation, l_year;
+```
+
+#### Query 3
+
+The Returned Item Reporting Query finds the top 20 customers, in terms of their effect on lost revenue for a given 
+quarter, who have returned parts. The query considers only parts that were ordered in the specified quarter. The 
+query lists the customer's name, address, nation, phone number, account balance, comment information and revenue 
+lost. The customers are listed in descending order of lost revenue. Revenue lost is defined as 
+sum(l_extendedprice*(1-l_discount)) for all qualifying lineitems.
+```sql
+select c_custkey, c_name, sum(l_extendedprice * (1 - l_discount)) as revenue, c_acctbal, n_name, c_address, c_phone, c_comment
+from customer, orders, lineitem, nation
+where c_custkey = o_custkey
+  and l_orderkey = o_orderkey
+  and o_orderdate >= date '1993-10-01'
+  and o_orderdate < date '1993-10-01' + interval '3' month
+  and l_returnflag = 'R'
+  and c_nationkey = n_nationkey
+group by c_custkey, c_name, c_acctbal, c_phone, n_name, c_address, c_comment
+order by revenue desc
+limit 20;
+```
+
+1. Record the execution time of each query, ignoring the first result which includes query compile time, 
+making sure to disable caching
+
+| Query   | Execution time (sec) |
+|---------|---------------------:|
+| Query 1 | 42
+| Query 2 |  4
+| Query 3 | 22
+| **TOTAL** | 68
 
 1. Record the execution plan for each query
 
@@ -219,17 +323,25 @@ balance storage and load times with good query performance.
     
     table            |load time (sec) |row count    |size (mb) |
     -----------------|---------------:|------------:|---------:|
-    customer         |                |             |          |
-    lineitem         |                |             |          |
-    nation           |                |             |          |
-    orders           |                |             |          |
-    part             |                |             |          |
-    partsupp         |                |             |          |
-    region           |                |             |          |
-    supplier         |                |             |          |
-    **TOTALS**       |                |             |          | 
+    customer         |             39 |   3,750,000 |      439 |
+    lineitem         |            247 | 149,996,355 |    6,750 |
+    nation           |             17 |          25 |       56 |
+    orders           |             76 |  37,500,000 |    1,768 |
+    part             |             35 |   5,000,000 |      352 |
+    partsupp         |             42 |  20,000,000 |    1,384 |
+    region           |             20 |           5 |       48 |
+    supplier         |             22 |     250,000 |      160 |
+    **TOTALS**       |        **498** |             | **10,957** |
 
 1. Record the execution time of each query
+
+| Query   | Original time (sec) | New Time
+|---------|--------------------:|---------:|
+| Query 1 | 42                  | 4
+| Query 2 |  4                  | 1
+| Query 3 | 22                  | 3
+| **TOTAL** | **68**            | **8**
+
 
 1. Record the execution plan for each query
 
@@ -238,9 +350,13 @@ balance storage and load times with good query performance.
 Thanks to your hard work, your boss should not have to add resources to the cluster and Marketing should be happy with
 the improvements in execution time. Summarize your work below:
 
-1.  How much (in percentage terms) did you reduce storage consumption?
+1.  What best practices did you apply?
 
-1.  How much (in percentage terms) did you improve query performance?
+1.  How much did you reduce storage consumption?
+
+1.  How much did you improve query performance?
+
+1.  How much did you speed up table load time?
 
 ## Bonus Work
 
@@ -249,4 +365,5 @@ the improvements in execution time. Summarize your work below:
 1. If so, what would the table definition look like for the orders table?
 
 1. Is this a best practice?  Why or why not?
+
 
