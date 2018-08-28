@@ -1,0 +1,2 @@
+# ECTO Learnathon Redshift Challenges
+
