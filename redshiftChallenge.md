@@ -164,7 +164,7 @@ compupdate off delimiter '|' ;
     
 ## Initial Analysis
 
-The data architect has provided this entity relationship diagram:
+The data architect has provided this entity relationship diagram (ERD):
 
 ![Marketing Data Warehouse ERD](images/Marketing-ERD.png "Marketing Data Warehouse ERD")
 
@@ -302,19 +302,27 @@ making sure to disable caching
 
 ## Apply Table Design Best Practices
 
-The data architect provides the following data model for the marketing data warehouse:
-
-1. Given the information above, update Johnny's table definitions to account for all table design best practices
+1. Given the ERD and sample queries above, update Johnny's table definitions to account for all table design best 
+practices
     ```sql
+    
+
+
+ 
 
     ```
-1.  Provide hard data to support your choices for distribution styles based on the queries assuming marketing wants
-balance storage and load times with good query performance. 
+
+1.  Cite best practices and provide data to support your choices for sort keys and distribution styles assuming 
+marketing wants to balance storage and load times with good query performance. 
 
 ## Apply Table Loading Best Practices
 
 1. Update the table loading script to follow the table loading best practices. 
     ```sql
+
+
+
+
 
     ```
 1. [Drop](DropTables.sql) the existing tables
