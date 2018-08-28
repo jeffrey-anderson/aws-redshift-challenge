@@ -239,7 +239,7 @@ The query lists the supplier nation, the customer nation, the year, and the reve
 in that year. The query orders the answer by Supplier nation, Customer nation, and year (all ascending).
 
 The business analyst gave them a slightly different query but it would not run due to date related errors. The marketing
-manager would like you to git rid of the work around.
+manager would like you to git rid of the work arounds.
 
 ```sql
 select supp_nation, cust_nation, l_year, sum(volume) as revenue
@@ -318,6 +318,10 @@ practices
 1.  Cite best practices and provide data to support your choices for sort keys and distribution styles assuming 
 marketing wants to balance storage and load times with good query performance. 
 
+1.  If fast query performance was more important than slower load times and greater storage usage, what changes would
+you make?
+
+
 ## Apply Table Loading Best Practices
 
 1. Update the table loading script to follow the table loading best practices. 
@@ -328,6 +332,12 @@ marketing wants to balance storage and load times with good query performance.
 
 
     ```
+
+1. Since each DC2.large compute node [has 2 slices](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-clusters.html#rs-dense-compute-nodes-table), 
+what ETL change can you recommend to further reduce load times?
+    
+## Test Your Changes
+
 1. [Drop](DropTables.sql) the existing tables
 
 1. Run your new create table scripts
@@ -357,12 +367,12 @@ marketing wants to balance storage and load times with good query performance.
     | Query 3 |                     | 
     | **TOTAL** |                   | 
 
-1. Record the execution plan for each query
+1. Record the execution plan for each query and identify the improvements
 
 ## Summary
 
 Thanks to your hard work, your boss should not have to add resources to the cluster and Marketing should be happy with
-the improvements in execution time. Summarize your work below:
+the improvements you made to their data warehouse. Summarize your work below:
 
 1.  What best practices did you apply?
 
