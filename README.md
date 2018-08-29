@@ -17,6 +17,7 @@ If you don't have admin privileges on your laptop, choose the option to install 
 
 * [Amazon Redshift Best Practices](https://docs.aws.amazon.com/redshift/latest/dg/best-practices.html)
 * [Amazon Redshift Engineering’s Advanced Table Design Playbook](https://aws.amazon.com/blogs/big-data/amazon-redshift-engineerings-advanced-table-design-playbook-preamble-prerequisites-and-prioritization/)
+* [Top 10 Performance Tuning Techniques for Amazon Redshift](https://aws.amazon.com/blogs/big-data/top-10-performance-tuning-techniques-for-amazon-redshift/)
 
 ## The Challenge
 Over the summer, your department intern, Johnny, setup a Redshift cluster for the Marketing department. 
