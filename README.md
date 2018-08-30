@@ -1,17 +1,23 @@
 # Redshift Challenge
 
-Inspired by the Redshift table design and table loading best practices using data and sample queries from the TCP-H 
-decision support benchmark.
+Inspired by the Redshift [table design](https://docs.aws.amazon.com/redshift/latest/dg/tutorial-tuning-tables.html)
+and [table loading](https://docs.aws.amazon.com/redshift/latest/dg/c_best-practices-loading-take-loading-data-tutorial.html)
+tutorials, using data and sample queries from the 
+[TCP-H](http://www.tpc.org/tpch/) decision support benchmark, built using the 
+[tpch-kit](https://github.com/gregrahn/tpch-kit) from 
+[Greg Rahn](https://github.com/gregrahn).
 
 ## Prerequisites
 
-[Download the latest version of DBeaver](https://dbeaver.io/download/) or get a copy from shopit.nwie.net. **Note:**
+[Download the latest version of DBeaver](https://dbeaver.io/download/) or get a copy from 
+[shopit.nwie.net](http://shopit.nwie.net/Shopping/requestItem/detail?id=2107&query=dbeaver). **Note:**
 If you don't have admin privileges on your laptop, choose the option to install just for you (not all users).
 
 ## References
 
 * [Amazon Redshift Best Practices](https://docs.aws.amazon.com/redshift/latest/dg/best-practices.html)
 * [Amazon Redshift Engineering’s Advanced Table Design Playbook](https://aws.amazon.com/blogs/big-data/amazon-redshift-engineerings-advanced-table-design-playbook-preamble-prerequisites-and-prioritization/)
+* [Top 10 Performance Tuning Techniques for Amazon Redshift](https://aws.amazon.com/blogs/big-data/top-10-performance-tuning-techniques-for-amazon-redshift/)
 
 ## The Challenge
 Over the summer, your department intern, Johnny, setup a Redshift cluster for the Marketing department. 
