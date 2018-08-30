@@ -39,8 +39,8 @@ region. The first thing you do is create a new cluster by restoring the snapshot
 
 ## Current Design
 
-While waiting for the cluster to become available, you take a few minutes to review the Entity Relationship Diagram(ERD)
-Liz, the data architect provided. 
+While waiting for the cluster to become available, you take a few minutes to review the Entity Relationship Diagram (ERD)
+Liz, the data architect, provided. 
 
 ![Marketing Data Warehouse ERD](images/Marketing-ERD.png "Marketing Data Warehouse ERD")
 
