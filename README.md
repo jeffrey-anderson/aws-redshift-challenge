@@ -313,6 +313,37 @@ did Johnny follow?
 
 1. Given the ERD and sample queries above, update Johnny's table definitions to account for all table design best 
 practices
+
+    <details>
+     <summary>Hint</summary>
+     <ul><li>Every field on the ERD except for the comments has <code>NOT NULL</code>. How does Redshit treat the NOT NULL constraint?</li></ul>
+    </details>
+    
+    <details>
+     <summary>Hint</summary>
+     <ul><li>The ERD shows one or more primary keys for each table. How does Redshit treat primary keys?</li></ul>
+    </details>
+    
+    <details>
+     <summary>Hint</summary>
+     <ul><li>The ERD shows how tables relate to each other based on foreign keys. How does Redshit treat foreign keys?</li></ul>
+    </details>
+    
+    <details>
+     <summary>Hint</summary>
+     <ul><li>Every column in the DDL has, <code>ENCODE RAW</code>. What does this do?</li></ul>
+    </details>
+    
+    <details>
+     <summary>Hint</summary>
+     <ul><li>Do the character field sizes and date field types match the ERD?  If not, what are the potential impacts?</li></ul>
+    </details>
+    
+    <details>
+     <summary>Hint</summary>
+     <ul><li>When creating the DDL, did Johnny account for all items in the hints above?</li></ul>
+    </details>
+
     ```sql
     
 
@@ -320,38 +351,6 @@ practices
  
 
     ```
-
-<details>
- <summary>Hint</summary>
- <ul><li>Every field on the ERD except for the comments has <code>NOT NULL</code>. How does Redshit treat the NOT NULL constraint?</li></ul>
-</details>
-
-<details>
- <summary>Hint</summary>
- <ul><li>The ERD shows one or more primary keys for each table. 
- How does Redshit treat primary keys?</li></ul>
-</details>
-
-<details>
- <summary>Hint</summary>
- <ul><li>The ERD shows how tables relate to each other based on foreign keys. 
- How does Redshit treat foreign keys?</li></ul>
-</details>
-
-<details>
- <summary>Hint</summary>
- <ul><li>Every column in the DDL has, <code>ENCODE RAW</code>. What does this do?</li></ul>
-</details>
-
-<details>
- <summary>Hint</summary>
- <ul><li>Do the character field sizes and date field types match the ERD?</li></ul>
-</details>
-
-<details>
- <summary>Hint</summary>
- <ul><li>Did Johnny Do the character field sizes match the ERD?</li></ul>
-</details>
 
 1.  Cite best practices and provide data to support your choices for sort keys and distribution styles assuming 
 marketing wants to balance storage and load times with good query performance. 
@@ -363,6 +362,22 @@ you make?
 ## Apply Table Loading Best Practices
 
 1. Update the table loading script to follow the table loading best practices. 
+
+    <details>
+     <summary>Hint</summary>
+     <ul><li>The copy jobs include the statement <code>compupdate off</code>. What does this do?</li></ul>
+    </details>
+
+    <details>
+     <summary>Hint</summary>
+     <ul><li>Does the S3 data source bucket have information about the source files that relate to the best processes?</li></ul>
+    </details>
+
+    <details>
+     <summary>Hint</summary>
+     <ul><li>What is the value of the <code>.manifest</code> files?</li></ul>
+    </details>
+
     ```sql
 
 
@@ -373,6 +388,12 @@ you make?
 
 1. Since each DC2.large compute node [has 2 slices](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-clusters.html#rs-dense-compute-nodes-table), 
 what ETL change can you recommend to further reduce load times?
+
+    <details>
+     <summary>Hint</summary>
+     <ul><li>COPY can concurrently process one file per slice on each node.</li></ul>
+    </details>
+
     
 ## Test Your Changes
 
