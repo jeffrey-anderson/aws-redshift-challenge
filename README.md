@@ -345,7 +345,7 @@ practices
 
 <details>
  <summary>Hint</summary>
- <ul><li>Do the character field sizes match the ERD?</li></ul>
+ <ul><li>Do the character field sizes and date field types match the ERD?</li></ul>
 </details>
 
 <details>
