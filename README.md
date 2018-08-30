@@ -31,10 +31,14 @@ user is ``awsuser`` and the password is ``H0ppyIPA``. They
 use a cluster of four (4) dc2.large nodes in production. The snapshot and most recent source data is in the Ohio 
 region. The first thing you do is create a new cluster by restoring the snapshot.  
 
-## The Intern's Design
+## Current Design
 
-While waiting for the cluster to become available, you take a few minutes to review Johnny's design. The table create 
-statements he used are shown below:
+While waiting for the cluster to become available, you take a few minutes to review the Entity Relationship Diagram(ERD)
+Liz, the data architect provided. 
+
+![Marketing Data Warehouse ERD](images/Marketing-ERD.png "Marketing Data Warehouse ERD")
+
+Next, you compare the ERD above with the table create statements Johnny prepared shown below:
 ```sql
 CREATE TABLE region
 (
@@ -167,10 +171,6 @@ compupdate off delimiter '|' ;
     
 ## Initial Analysis
 
-The data architect has provided this entity relationship diagram (ERD):
-
-![Marketing Data Warehouse ERD](images/Marketing-ERD.png "Marketing Data Warehouse ERD")
-
 ### Benchmarks
 
 Before making any changes, you want to understand the current state so you can report an accurate before and after 
@@ -187,18 +187,6 @@ partsupp         |             72 |             |          |
 region           |              5 |             |          |
 supplier         |              7 |             |          |
 **TOTALS**       |      **1,955** |             |          | 
-
-### Best Practices Analysis
-
-1. Which [table design best practices](https://docs.aws.amazon.com/redshift/latest/dg/c_designing-tables-best-practices.html) 
-did Johnny follow?
-
-1. Which did he miss?
-
-1. Which [table loading best practices](https://docs.aws.amazon.com/redshift/latest/dg/c_loading-data-best-practices.html) 
-did Johnny follow?
-
-1. Which did he miss?
 
 ### Sample Queries
 
@@ -294,14 +282,26 @@ limit 20;
 1. Record the execution time of each query, ignoring the first result which includes query compile time, 
 making sure to disable caching
 
-| Query   | Execution time (sec) |
-|---------|---------------------:|
-| Query 1 | 
-| Query 2 | 
-| Query 3 | 
-| **TOTAL** | 
+    | Query   | Execution time (sec) |
+    |---------|---------------------:|
+    | Query 1 | 
+    | Query 2 | 
+    | Query 3 | 
+    | **TOTAL** | 
 
 1. Record the execution plan for each query
+
+### Best Practices Analysis
+
+1. Which [table design best practices](https://docs.aws.amazon.com/redshift/latest/dg/c_designing-tables-best-practices.html) 
+did Johnny follow?
+
+1. Which did he miss?
+
+1. Which [table loading best practices](https://docs.aws.amazon.com/redshift/latest/dg/c_loading-data-best-practices.html) 
+did Johnny follow?
+
+1. Which did he miss?
 
 ## Apply Table Design Best Practices
 
@@ -314,6 +314,38 @@ practices
  
 
     ```
+
+<details>
+ <summary>Hint</summary>
+ <ul><li>Every field on the ERD except for the comments has <code>NOT NULL</code>. How does Redshit treat the NOT NULL constraint?</li></ul>
+</details>
+
+<details>
+ <summary>Hint</summary>
+ <ul><li>The ERD shows one or more primary keys for each table. 
+ How does Redshit treat primary keys?</li></ul>
+</details>
+
+<details>
+ <summary>Hint</summary>
+ <ul><li>The ERD shows how tables relate to each other based on foreign keys. 
+ How does Redshit treat foreign keys?</li></ul>
+</details>
+
+<details>
+ <summary>Hint</summary>
+ <ul><li>Every column in the DDL has, <code>ENCODE RAW</code>. What does this do?</li></ul>
+</details>
+
+<details>
+ <summary>Hint</summary>
+ <ul><li>Do the character field sizes match the ERD?</li></ul>
+</details>
+
+<details>
+ <summary>Hint</summary>
+ <ul><li>Did Johnny Do the character field sizes match the ERD?</li></ul>
+</details>
 
 1.  Cite best practices and provide data to support your choices for sort keys and distribution styles assuming 
 marketing wants to balance storage and load times with good query performance. 
