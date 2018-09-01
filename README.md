@@ -44,7 +44,7 @@ Liz, the data architect, provided.
 
 ![Marketing Data Warehouse ERD](images/Marketing-ERD.png "Marketing Data Warehouse ERD")
 
-Next, you compare the ERD above with the table create statements Johnny prepared shown below:
+Next, you compare the ERD above with the [table create](CreateTables.sql) statements Johnny prepared shown below:
 ```sql
 CREATE TABLE region
 (
@@ -196,8 +196,8 @@ supplier         |              7 |             |          |
 
 ### Sample Queries
 
-In order to help you optimse the table design, Marketing has provided a few queries which are typically included in
-their analysis.
+In order to help you optimise the table design, Marketing has provided a few [queries](MarketingQueries.sql) which are 
+typically included in their analysis.
 
 #### Query 1
 
@@ -238,28 +238,28 @@ manager would like you to git rid of the work arounds.
 ```sql
 select supp_nation, cust_nation, l_year, sum(volume) as revenue
 from (
-      select
-             n1.n_name as supp_nation,
-             n2.n_name as cust_nation,
-             -- WORKS:
-             SUBSTRING(l_shipdate,1,4) as l_year,
-             -- SHOULD BE:
-             -- extract(year from l_shipdate) as l_year,
-             l_extendedprice * (1-l_discount) as volume
-      from supplier, lineitem, orders, customer, nation n1, nation n2
-      where s_suppkey = l_suppkey
-        and o_orderkey = l_orderkey
-        and c_custkey = o_custkey
-        and s_nationkey = n1.n_nationkey
-        and c_nationkey = n2.n_nationkey
-        and (
-              (n1.n_name = 'CANADA' and n2.n_name = 'UNITED STATES')
-                or (n1.n_name = 'UNITED STATES' and n2.n_name = 'CANADA')
-            )
-        -- WORKS:
-        and l_shipdate between '1995-01-01' and '1996-12-31') as shipping
-        -- SHOULD BE:
-        -- and l_shipdate between date '1995-01-01' and date '1996-12-31') as shipping 
+     select
+            n1.n_name as supp_nation,
+            n2.n_name as cust_nation,
+         -- WORKS:
+            SUBSTRING(l_shipdate,1,4) as l_year,
+         -- SHOULD BE:
+         -- extract(year from l_shipdate) as l_year,
+            l_extendedprice * (1-l_discount) as volume
+     from supplier, lineitem, orders, customer, nation n1, nation n2
+     where s_suppkey = l_suppkey
+       and o_orderkey = l_orderkey
+       and c_custkey = o_custkey
+       and s_nationkey = n1.n_nationkey
+       and c_nationkey = n2.n_nationkey
+       and (   (n1.n_name = 'CANADA' and n2.n_name = 'UNITED STATES')
+            or (n1.n_name = 'UNITED STATES' and n2.n_name = 'CANADA')
+           )
+         -- WORKS:
+       and l_shipdate between '1995-01-01' and '1996-12-31'
+     -- SHOULD BE:
+     -- and l_shipdate between date '1995-01-01' and date '1996-12-31'
+     ) as shipping
 group by supp_nation, cust_nation, l_year
 order by supp_nation, cust_nation, l_year;
 ```
@@ -277,7 +277,7 @@ from customer, orders, lineitem, nation
 where c_custkey = o_custkey
   and l_orderkey = o_orderkey
   and o_orderdate >= date '1993-10-01'
-  and o_orderdate < date '1993-10-01' + interval '3' month
+  and o_orderdate < dateadd(month, 3, '1993-10-01')
   and l_returnflag = 'R'
   and c_nationkey = n_nationkey
 group by c_custkey, c_name, c_acctbal, c_phone, n_name, c_address, c_comment

@@ -1,0 +1,24 @@
+Name:  Scooters Big Wheels Marketing Database
+Description: |
+  This data set contains sales and marketing data for Scooter's Big Wheels Corporation.
+  Full extracts are created nightly and are placed into two folders, raw and psvgz. Fields in all files are pipe delimited.
+  raw contains a full, uncompressed extract of each file.   psvgz contains the same data but gzip compressed with
+  larger files split into four chunks. This folder also has manifest files for use with the copy command.
+Documentation: http://www.gdeltproject.org/
+Contact: andersja@naionwide.com
+UpdateFrequency: Daily
+Tags:
+- Sales data
+- Marketing dat
+- Transaction History
+SecurityClassification: InternalUse
+Resources:
+- Description: Project data files
+  ARN: arn:aws:s3:::tpc-h-load-data
+  Region: us-east-2
+  Type: S3 Bucket
+DataAtWork:
+- Title: Redshift Challenge
+  URL: https://github.nwie.net/andersja/redshift-challenge/blob/master/README.md
+  AuthorName: Jeff Anderson
+  AuthorURL: https://jeff-anderson.com
