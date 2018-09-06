@@ -450,4 +450,12 @@ the improvements you made to their data warehouse. Summarize your work below:
 
 1. Is this a best practice?  Why or why not?
 
+## Last But Not Least
 
+As a good steward of the company's money, what is the most important final task you need to complete? 
+
+<details>
+ <summary>Hint</summary>
+ <h4>Delete your cluster to avoid unnecessary expenses</h4>
+ <p>If needed, it be recreated from the snapshot.  
+</details>
