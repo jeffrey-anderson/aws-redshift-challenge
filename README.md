@@ -35,7 +35,8 @@ you are eager to impress her.
 The marketing manager created a snapshot called ``inital-state-with-data`` for you to use in your evaluation. The admin
 user is ``awsuser`` and the password is ``H0ppyIPA``. They
 use a cluster of four (4) dc2.large nodes in production. The snapshot and most recent source data is in the Ohio 
-region. The first thing you do is create a new cluster by restoring the snapshot.  
+region. The first thing you do is restore the cluster from the snapshot making sure to choose VPC Security Group 
+**redshift-from-nw-guest** and add the **myRedshiftRole** IAM role. 
 
 ## Current Design
 
