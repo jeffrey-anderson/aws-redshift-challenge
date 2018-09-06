@@ -457,5 +457,6 @@ As a good steward of the company's money, what is the most important final task 
 <details>
  <summary>Hint</summary>
  <h4>Delete your cluster to avoid unnecessary expenses</h4>
- <p>If needed, it be recreated from the snapshot.  
+ <p>Elect <em>not</em> to create a final snapshot. Obviously, if this was a real production warehouse, you may want to
+ choose otherwise.</p>    
 </details>
