@@ -1,31 +1,34 @@
-copy region FROM 's3://tpc-h-load-data/psvgz/region.tbl.gz'
-credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
-gzip delimiter '|' ;
+-- Copy commands that load from multiple compressed files but don't follow the best
+-- practice of using a manifest file:
 
-copy nation FROM 's3://tpc-h-load-data/psvgz/nation.tbl.gz'
-credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
-gzip delimiter '|' ;
+copy region FROM 's3://tpc-h-load-data/psv-gz/region.tbl.gz'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/redshift-s3-ro-access'
+gzip compupdate on delimiter '|' ;
 
-copy part from 's3://tpc-h-load-data/psvgz/part.manifest' 
-credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
-gzip delimiter '|' manifest;
+copy nation FROM 's3://tpc-h-load-data/psv-gz/nation.tbl.gz'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/redshift-s3-ro-access'
+gzip compupdate on delimiter '|' ;
 
-copy supplier from 's3://tpc-h-load-data/psvgz/supplier.manifest' 
-credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
-gzip delimiter '|' manifest;
+copy part FROM 's3://tpc-h-load-data/m-psv-gz/part/'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/redshift-s3-ro-access'
+gzip compupdate on delimiter '|' ;
 
-copy partsupp from 's3://tpc-h-load-data/psvgz/partsupp.manifest' 
-credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
-gzip delimiter '|' manifest;
+copy supplier FROM 's3://tpc-h-load-data/m-psv-gz/supplier/'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/redshift-s3-ro-access'
+gzip compupdate on delimiter '|' ;
 
-copy customer from 's3://tpc-h-load-data/psvgz/customer.manifest' 
-credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
-gzip delimiter '|' manifest;
+copy partsupp FROM 's3://tpc-h-load-data/m-psv-gz/partsupp/'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/redshift-s3-ro-access'
+gzip compupdate on delimiter '|' ;
 
-copy orders from 's3://tpc-h-load-data/psvgz/orders.manifest' 
-credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
-gzip delimiter '|' manifest;
+copy customer FROM 's3://tpc-h-load-data/m-psv-gz/customer/'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/redshift-s3-ro-access'
+gzip compupdate on delimiter '|' ;
 
-copy lineitem from 's3://tpc-h-load-data/psvgz/lineitem.manifest' 
-credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
-gzip delimiter '|' manifest;
+copy orders FROM 's3://tpc-h-load-data/m-psv-gz/orders/'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/redshift-s3-ro-access'
+gzip compupdate on delimiter '|' ;
+
+copy lineitem FROM 's3://tpc-h-load-data/m-psv-gz/lineitem/'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/redshift-s3-ro-access'
+gzip compupdate on delimiter '|' ;

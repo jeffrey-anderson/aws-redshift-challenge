@@ -9,9 +9,7 @@ tutorials, using data and sample queries from the
 
 ## Prerequisites
 
-[Download the latest version of DBeaver](https://dbeaver.io/download/) or get a copy from 
-[shopit.nwie.net](http://shopit.nwie.net/Shopping/requestItem/detail?id=2107&query=dbeaver). **Note:**
-If you don't have admin privileges on your laptop, choose the option to install just for you (not all users).
+None
 
 ## References
 
@@ -20,7 +18,7 @@ If you don't have admin privileges on your laptop, choose the option to install 
 * [Top 10 Performance Tuning Techniques for Amazon Redshift](https://aws.amazon.com/blogs/big-data/top-10-performance-tuning-techniques-for-amazon-redshift/)
 
 ## The Challenge
-Over the summer, your department intern, Johnny, setup a Redshift cluster for the Marketing department. 
+Over the summer, your department intern, Johnny, setup a Redshift cluster for the Scooter's Big Wheels Marketing department. 
 Initially, everything was performing well but as more data was added, performance started to degrade. Now, the AVP of 
 Marketing is concerned because query performance is slow, the table load times are longer than anticipated, and storage 
 usage is much higher than projected for the amount of data being stored.  
@@ -32,11 +30,11 @@ Having just earned your
 [AWS Big Data Speciality Certification](https://aws.amazon.com/certification/certified-big-data-specialty/) 
 you are eager to impress her.
 
-The marketing manager created a snapshot called ``inital-state-with-data`` for you to use in your evaluation. The admin
+The marketing manager created a snapshot called ``sbw-marketing-2018-10`` for you to use in your evaluation. The admin
 user is ``awsuser`` and the password is ``H0ppyIPA``. They
 use a cluster of four (4) dc2.large nodes in production. The snapshot and most recent source data is in the Ohio 
-region. The first thing you do is restore the cluster from the snapshot making sure to choose VPC Security Group 
-**redshift-from-nw-guest** and change the *cluster identifier* to something unique to you. Once the cluster is running, add the **myRedshiftRole** IAM role.
+region. The first thing you do is restore the cluster from the snapshot making sure to **change the *cluster identifier*
+ to something unique to you**. Once the cluster is running, add the **redshift-s3-ro-access** IAM role.
 
 ## Current Design
 
@@ -143,36 +141,36 @@ CREATE TABLE lineitem
 
 Next, you look over the script Johnny created to load the data:
 ```sql
-copy region FROM 's3://tpc-h-load-data/raw/region.tbl'
-credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
+copy region FROM 's3://tpc-h-load-data/psv/region.tbl'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/redshift-s3-ro-access' 
 compupdate off delimiter '|' ;
 
-copy nation FROM 's3://tpc-h-load-data/raw/nation.tbl'
-credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
+copy nation FROM 's3://tpc-h-load-data/psv/nation.tbl'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/redshift-s3-ro-access' 
 compupdate off delimiter '|' ;
 
-copy part FROM 's3://tpc-h-load-data/raw/part.tbl'
-credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
+copy part FROM 's3://tpc-h-load-data/psv/part.tbl'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/redshift-s3-ro-access' 
 compupdate off delimiter '|' ;
 
-copy supplier FROM 's3://tpc-h-load-data/raw/supplier.tbl'
-credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
+copy supplier FROM 's3://tpc-h-load-data/psv/supplier.tbl'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/redshift-s3-ro-access' 
 compupdate off delimiter '|' ;
 
-copy partsupp FROM 's3://tpc-h-load-data/raw/partsupp.tbl'
-credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
+copy partsupp FROM 's3://tpc-h-load-data/psv/partsupp.tbl'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/redshift-s3-ro-access' 
 compupdate off delimiter '|' ;
 
-copy customer FROM 's3://tpc-h-load-data/raw/customer.tbl'
-credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
+copy customer FROM 's3://tpc-h-load-data/psv/customer.tbl'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/redshift-s3-ro-access' 
 compupdate off delimiter '|' ;
 
-copy orders FROM 's3://tpc-h-load-data/raw/orders.tbl'
-credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
+copy orders FROM 's3://tpc-h-load-data/psv/orders.tbl'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/redshift-s3-ro-access' 
 compupdate off delimiter '|' ;
 
-copy lineitem FROM 's3://tpc-h-load-data/raw/lineitem.tbl'
-credentials 'aws_iam_role=arn:aws:iam::215087568033:role/myRedshiftRole' 
+copy lineitem FROM 's3://tpc-h-load-data/psv/lineitem.tbl'
+credentials 'aws_iam_role=arn:aws:iam::215087568033:role/redshift-s3-ro-access' 
 compupdate off delimiter '|' ;
 ```
     
@@ -286,15 +284,20 @@ order by revenue desc
 limit 20;
 ```
 
-1. Record the execution time of each query, ignoring the first result which includes query compile time, 
-making sure to disable caching
+1. Record the execution time of each query, ignoring the first result which includes query compile time. 
+Also, since Redshift caches query results, don't forget to turn off session caching prior to collecting statistics.
+
+<details>
+ <summary>Hint</summary>
+ <code>set enable_result_cache_for_session to off;</code>
+</details>
 
     | Query   | Execution time (sec) |
     |---------|---------------------:|
     | Query 1 | 
     | Query 2 | 
     | Query 3 | 
-    | **TOTAL** | 
+    |**TOTAL**| 
 
 1. Record the execution plan for each query
 
@@ -387,15 +390,6 @@ you make?
 
     ```
 
-1. Since each DC2.large compute node [has 2 slices](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-clusters.html#rs-dense-compute-nodes-table), 
-what ETL change can you recommend to further reduce load times?
-
-    <details>
-     <summary>Hint</summary>
-     <ul><li>COPY can concurrently process one file per slice on each node.</li></ul>
-    </details>
-
-    
 ## Test Your Changes
 
 1. [Drop](DropTables.sql) the existing tables
