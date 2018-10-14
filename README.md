@@ -467,11 +467,36 @@ the improvements you made to their data warehouse. Summarize your work below:
 
 ## Bonus Work
 
+### Compression
+
 1. Based on the orders table, can additional space be saved using different column encodings?
+
+    <details>
+     <summary>Hint</summary>
+     <code>ANALYSE COMPRESSION orders;</code>
+    </details>
 
 1. If so, what would the table definition look like for the orders table?
 
 1. Is this a best practice?  Why or why not?
+
+### Cluster Monitoring
+
+From the **Clusters** view, click on the cluster name and explore various tabs in the cluster details view:
+
+1. What is the longest query time?
+
+1. What is the fastest table load time?
+
+1. What is the query throughput by work load management (WLM) queue?
+
+1. Query duration by WLM queue?
+
+1. Precisely how long did it take for the cluster to become ready for use after being restored from the snapshot?
+
+1. Which node has the lowest overall CPU utilization?
+
+1. Which node(s) have the most database connections?
 
 ## Last But Not Least
 
