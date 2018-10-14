@@ -10,8 +10,23 @@ tutorials, using data and sample queries from the
 
 ## Prerequisites
 
+Recently, Amazon [launched a beta Redshift query editor](https://aws.amazon.com/about-aws/whats-new/2018/10/amazon_redshift_announces_query_editor_to_run_queries_directly_from_the_aws_console/)
+so users can run Redshift queries directly from the AWS console. Using this option is the simplest but is not ideal
+for benchmarking since the query editor ignores the directive to disable query result caching. Also, operations that
+take longer than 3 minutes fail with a "socket timeout" error. 
+
+### Using a SQL Query tool on your computer
+
+1. If you don't have a favorite query tool installed on your computer, 
+[download the latest version of DBeaver](https://dbeaver.io/download/) or get a copy from 
+[shopit.nwie.net](http://shopit.nwie.net/Shopping/requestItem/detail?id=2107&query=dbeaver). **Note:**
+If you don't have admin privileges on your laptop, choose the option to install just for you (not all users).
+2. You are connected to the Nationwide *guest* network (corporate computers) or the *POD* network (personally owned
+computers).
+
 ### If you use the Redshift query editor
-None
+**None** but this is **not recommended for benchmarking** because the query editor ignores the directive to disable query 
+result caching making it impossible to evaluate how long queries take in various configurations. 
 
 ## References
 
@@ -35,8 +50,13 @@ you are eager to impress her.
 The marketing manager created a snapshot called ``sbw-marketing-2018-10`` for you to use in your evaluation. The admin
 user is ``awsuser`` and the password is ``H0ppyIPA``. They
 use a cluster of four (4) dc2.large nodes in production. The snapshot and most recent source data is in the Ohio 
-region. The first thing you do is restore the cluster from the snapshot making sure to **change the *cluster identifier*
- to something unique to you**. Once the cluster is running, add the **redshift-s3-ro-access** IAM role.
+region. The first thing you do is restore the cluster from the snapshot making sure to:
+* **Change the *cluster identifier* to something unique to you**
+* Choose the *default* VPC security group and, if you will be using a SQL Query tool
+on your local machine instead of the Redshift Query editor, choose *redshift-from-nw-guest*
+* Once the cluster is running, modify it and add the **redshift-s3-ro-access** IAM role
+
+**NOTE: It will take 10-15 minutes for the cluster to come up and be fully available.**
 
 ## Current Design
 
@@ -382,6 +402,13 @@ you make?
     <details>
      <summary>Hint</summary>
      <ul><li>What is the value of the <code>.manifest</code> files?</li></ul>
+     <p><strong>BONUS:</strong></p>
+     <ol>
+       <li>Create a directory with your name or initials in the "nw-learnathon-participant-files" S3 bucket</li>
+       <li>Using your favoriate text editor, create manifest files for each of the tables</li>
+       <li>Upload them to your directory in the "nw-learnathon-participant-files" S3 bucket</li>
+       <li>Create and test copy commands that use your manifest files</li>
+     </ol>
     </details>
 
     ```sql
