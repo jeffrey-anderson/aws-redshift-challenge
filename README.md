@@ -3,12 +3,14 @@
 Inspired by the Redshift [table design](https://docs.aws.amazon.com/redshift/latest/dg/tutorial-tuning-tables.html)
 and [table loading](https://docs.aws.amazon.com/redshift/latest/dg/c_best-practices-loading-take-loading-data-tutorial.html)
 tutorials, using data and sample queries from the 
-[TCP-H](http://www.tpc.org/tpch/) decision support benchmark, built using the 
+[TCP-H](http://www.tpc.org/tpch/) decision support benchmark, 
+[built](https://github.com/jeffrey-anderson/aws-intro-demos/blob/master/Demo-RedshiftDataPrep.md) using the 
 [tpch-kit](https://github.com/gregrahn/tpch-kit) from 
 [Greg Rahn](https://github.com/gregrahn).
 
 ## Prerequisites
 
+### If you use the Redshift query editor
 None
 
 ## References
@@ -18,7 +20,7 @@ None
 * [Top 10 Performance Tuning Techniques for Amazon Redshift](https://aws.amazon.com/blogs/big-data/top-10-performance-tuning-techniques-for-amazon-redshift/)
 
 ## The Challenge
-Over the summer, your department intern, Johnny, setup a Redshift cluster for the Scooter's Big Wheels Marketing department. 
+Over the summer, your department intern, Johnny, setup a Redshift cluster for the **Scooter's Big Wheels** Marketing department. 
 Initially, everything was performing well but as more data was added, performance started to degrade. Now, the AVP of 
 Marketing is concerned because query performance is slow, the table load times are longer than anticipated, and storage 
 usage is much higher than projected for the amount of data being stored.  
@@ -287,10 +289,10 @@ limit 20;
 1. Record the execution time of each query, ignoring the first result which includes query compile time. 
 Also, since Redshift caches query results, don't forget to turn off session caching prior to collecting statistics.
 
-<details>
- <summary>Hint</summary>
- <code>set enable_result_cache_for_session to off;</code>
-</details>
+    <details>
+     <summary>Hint</summary>
+     <code>set enable_result_cache_for_session to off;</code>
+    </details>
 
     | Query   | Execution time (sec) |
     |---------|---------------------:|
@@ -454,3 +456,17 @@ As a good steward of the company's money, what is the most important final task 
  <p>Elect <em>not</em> to create a final snapshot. Obviously, if this was a real production warehouse, you may want to
  choose otherwise.</p>    
 </details>
+
+## Additional Resources
+
+**Jeff's Data Warehousing with Redshift Teaching Thursday Materials** 
+
+* [Slide Deck](https://docs.google.com/presentation/d/1HtNHkwARs-ecpimiROqN23Elewt8OgvJC9sheO7ldZ0/edit?usp=sharing)
+
+**Labs:**
+* [Creating Sample Data For Redshift](https://github.com/jeffrey-anderson/aws-intro-demos/blob/master/Demo-RedshiftDataPrep.md)
+* [Launching a Redshift Cluster](https://github.com/jeffrey-anderson/aws-intro-demos/blob/master/Lab-LaunchRedchiftCluster.md)
+* [Loading Data](https://github.com/jeffrey-anderson/aws-intro-demos/blob/master/Lab-RedshiftTableLoading.md)
+* [Deleting a Redshift Cluster](https://github.com/jeffrey-anderson/aws-intro-demos/blob/master/Lab-DeletingRedshiftCluster.md)
+
+### 
